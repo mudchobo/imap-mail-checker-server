@@ -1,0 +1,10 @@
+{
+    "name": "imap-mail-check-server",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "imap": "0.8.14",
+        "socket.io": "1.2.0",
+        "node-rsa": "0.1.53"
+    }
+}

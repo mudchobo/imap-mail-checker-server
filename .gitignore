@@ -26,3 +26,10 @@ node_modules
 
 # Users Environment Variables
 .lock-wscript
+
+# rsa file
+rsa_1024_priv
+rsa_1024_pub
+
+# intellij
+.idea
