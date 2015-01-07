@@ -6,7 +6,7 @@ var NodeRSA = require('node-rsa');
 var fs = require('fs');
 var data = fs.readFileSync('./rsa_1024_priv', 'utf8');
 var key = new NodeRSA(data);
-
+console.log('start!');
 io.set('transports', ['websocket', 'polling']);
 io.on('connection', function(socket) {
     console.log('connection = ' + socket.id);
@@ -18,6 +18,11 @@ io.on('connection', function(socket) {
         if (!data.hasOwnProperty('id') || !data.hasOwnProperty('pw') || !data.hasOwnProperty('imap_server') || !data.hasOwnProperty('imap_port') || !data.hasOwnProperty('imap_tls')) {
             socket.disconnect();
             return;
+        }
+        // 기존 imap이 있는지 확인 후 destroy.
+        if (connections[socket.id] && connections[socket.id].imap) {
+            connections[socket.id].imap.destroy();
+            delete connections[socket.id].imap;
         }
 
         // 비밀번호 디코드.
@@ -31,6 +36,7 @@ io.on('connection', function(socket) {
             port: data.imap_port,
             tls: data.imap_tls
         });
+
         imap.once('ready', function() {
             connections[socket.id] = {socket: socket, imap: imap};
             socket.emit('login_success');
@@ -50,6 +56,7 @@ io.on('connection', function(socket) {
 
     // unseen목록 요청
     socket.on('unseen', function(data) {
+        console.log('unseen = ' + socket.id);
         try {
             var imap = connections[socket.id].imap;
             imap.openBox('INBOX', true, function(err, box) {
@@ -83,6 +90,7 @@ io.on('connection', function(socket) {
             socket.disconnect();
             return;
         }
+        console.log('mail_info, socket.id = ' + socket.id + ', mail_id = ' + data.id);
         var mailId = data.id;
         try {
             var imap = connections[socket.id].imap;
