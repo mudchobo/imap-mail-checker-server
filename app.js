@@ -7,7 +7,8 @@ var fs = require('fs');
 var data = fs.readFileSync('./rsa_1024_priv', 'utf8');
 var key = new NodeRSA(data);
 console.log('start!');
-io.set('transports', ['websocket', 'polling']);
+io.set('pingTimeout', 3000);
+io.set('transports', ['websocket', 'polling', 'xhr-polling']);
 io.on('connection', function(socket) {
     console.log('connection = ' + socket.id);
     socket.emit('connection', {'connection': 'complete'});
